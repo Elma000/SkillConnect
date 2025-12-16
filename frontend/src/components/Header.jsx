@@ -44,6 +44,14 @@ export default function Header() {
           </Link>
           {isLoggedIn() && (
             <Link
+              to="/skills"
+              className="text-sm text-slate-600 hover:underline"
+            >
+              Skills
+            </Link>
+          )}
+          {isLoggedIn() && (
+            <Link
               to="/notepad"
               className="text-sm text-slate-600 hover:underline"
             >

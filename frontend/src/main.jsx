@@ -15,6 +15,7 @@ import TaskList from "./pages/TaskList.jsx";
 import TaskView from "./pages/TaskView.jsx";
 import TaskEdit from "./pages/TaskEdit.jsx";
 import Layout from "./layouts/Layout";
+import SkillSearch from "./pages/SkillSearch.jsx";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
       { path: "task/new", element: <TaskEdit /> },
       { path: "task/:id", element: <TaskView /> },
       { path: "task/:id/edit", element: <TaskEdit /> },
+      { path: "skills", element: <SkillSearch /> },
     ],
   },
 ]);
