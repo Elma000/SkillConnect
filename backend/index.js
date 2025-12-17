@@ -5,7 +5,7 @@ var jwt = require("jsonwebtoken");
 const { default: notepadRoute } = require("./controller/notepad.controller");
 const { default: userRoute } = require("./controller/user.controller");
 const { default: taskRoute } = require("./controller/task.controller");
-const { default: skillRoute } = require("./controller/skill.controller");
+const { default: notificationRoute } = require("./controller/notification.controller");
 const {
   findUserByEmail,
   createUser,
@@ -65,7 +65,7 @@ app.post("/signup", async (req, res) => {
 app.use("/user", authMiddleware, userRoute);
 app.use("/notepad", authMiddleware, notepadRoute);
 app.use("/task", authMiddleware, taskRoute);
-app.use("/skill", authMiddleware, skillRoute);
+app.use("/notifications", authMiddleware, notificationRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

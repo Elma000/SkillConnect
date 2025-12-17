@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { api } from "../services/api";
 import { logout, isLoggedIn } from "../services/auth";
+import NotificationIcon from "./NotificationIcon";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -44,14 +45,6 @@ export default function Header() {
           </Link>
           {isLoggedIn() && (
             <Link
-              to="/skills"
-              className="text-sm text-slate-600 hover:underline"
-            >
-              Skills
-            </Link>
-          )}
-          {isLoggedIn() && (
-            <Link
               to="/notepad"
               className="text-sm text-slate-600 hover:underline"
             >
@@ -76,7 +69,8 @@ export default function Header() {
 
       <div className="flex items-center gap-3">
         {isLoggedIn() ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <NotificationIcon />
             {picture ? (
               <img
                 src={picture}
