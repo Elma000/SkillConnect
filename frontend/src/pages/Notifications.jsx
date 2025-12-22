@@ -13,6 +13,16 @@ export default function Notifications() {
 
   useEffect(() => {
     fetchNotifications();
+    // Check for incomplete items on mount
+    const checkIncomplete = async () => {
+      try {
+        await api.post("/notifications/check-incomplete");
+        fetchNotifications(); // Refresh after check
+      } catch (err) {
+        console.log("Notification check failed:", err);
+      }
+    };
+    checkIncomplete();
   }, [filter]);
 
   const fetchNotifications = async (append = false) => {
@@ -98,10 +108,12 @@ export default function Notifications() {
         return "💬";
       case "profile_view":
         return "👁️";
-      case "skill_match":
-        return "🎯";
       case "task_reminder":
         return "⏰";
+      case "incomplete_task":
+        return "📋";
+      case "incomplete_course":
+        return "📚";
       default:
         return "🔔";
     }
@@ -146,6 +158,21 @@ export default function Notifications() {
               )}
             </div>
             <div className="flex gap-2">
+              <button
+                onClick={async () => {
+                  try {
+                    await api.post("/notifications/check-incomplete");
+                    fetchNotifications();
+                    alert("Checked for incomplete tasks and courses");
+                  } catch (err) {
+                    alert(err.message || "Failed to check incomplete items");
+                  }
+                }}
+                className="px-3 py-2 text-sm bg-emerald-100 text-emerald-700 rounded-md hover:bg-emerald-200"
+                title="Check for incomplete tasks and courses"
+              >
+                Check Incomplete
+              </button>
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}

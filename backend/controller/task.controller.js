@@ -1,5 +1,6 @@
 import express from "express";
 import { createTask, getTasksByOwner, findTaskById, updateTask, deleteTask } from "../service/task.service.js";
+import { checkAndNotifyIncompleteItems } from "../service/notificationChecker.service.js";
 
 const taskRoute = express.Router();
 
@@ -65,6 +66,12 @@ taskRoute.put("/update/:id", async (req, res) => {
 		const total = (updated.goals || []).length;
 		const done = (updated.goals || []).filter((g) => g.done).length;
 		const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+		
+		// Check for incomplete items and send notifications (async, don't wait)
+		checkAndNotifyIncompleteItems(req.userId, false).catch(err => 
+			console.error("Error checking incomplete items:", err)
+		);
+		
 		res.status(200).send({ ...updated.toObject(), percentCompleted: percent });
 	} catch (err) {
 		console.error(err);

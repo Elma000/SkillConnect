@@ -14,9 +14,16 @@ export default function Login() {
     e.preventDefault();
     api
       .post("/login", { email, password })
-      .then((data) => {
+      .then(async (data) => {
         if (data && data.token) {
           setAuth({ token: data.token, userId: data.userId });
+          // Check for incomplete items and create notifications
+          try {
+            await api.post("/notifications/check-incomplete");
+          } catch (err) {
+            // Silently fail - notifications will be checked later
+            console.log("Notification check failed:", err);
+          }
           window.location.href = "/profile";
         } else {
           alert("Invalid credentials");

@@ -8,6 +8,7 @@ import {
   deleteNotification,
   deleteAllNotifications
 } from "../service/notification.service.js";
+import { checkAndNotifyIncompleteItems } from "../service/notificationChecker.service.js";
 
 const notificationRoute = express.Router();
 
@@ -114,6 +115,23 @@ notificationRoute.post("/test", async (req, res) => {
     res.status(201).send(notification);
   } catch (err) {
     console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// Check and send notifications for incomplete tasks and courses
+notificationRoute.post("/check-incomplete", async (req, res) => {
+  if (!req.userId) return res.status(401).send("Unauthorized");
+  
+  try {
+    const forceSend = req.query.force === "true";
+    const notifications = await checkAndNotifyIncompleteItems(req.userId, forceSend);
+    res.status(200).send({
+      message: `Checked incomplete items. Created ${notifications.length} notification(s).`,
+      notifications,
+    });
+  } catch (err) {
+    console.error("Error checking incomplete items:", err);
     res.status(500).send("Internal Server Error");
   }
 });

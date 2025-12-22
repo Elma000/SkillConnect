@@ -13,20 +13,31 @@ export default function SkillSearch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // redirect unauthenticated users
+  // Redirect unauthenticated users
   useEffect(() => {
-    if (!isLoggedIn()) navigate("/login");
+    if (!isLoggedIn()) {
+      navigate("/login");
+    }
   }, [navigate]);
 
-  // fetch skills whenever the query changes (debounced)
+  // Fetch skills whenever the query changes (debounced)
   useEffect(() => {
     if (!isLoggedIn()) return;
+    
     setLoading(true);
     setError("");
+    
     const handle = setTimeout(() => {
+      const searchQuery = query.trim();
+      const url = searchQuery 
+        ? `/skill/search?q=${encodeURIComponent(searchQuery)}`
+        : `/skill/search`;
+      
       api
-        .get(`/skill/search?q=${encodeURIComponent(query)}`)
-        .then((data) => setSkills(data || []))
+        .get(url)
+        .then((data) => {
+          setSkills(Array.isArray(data) ? data : []);
+        })
         .catch((err) => {
           if (err.status === 401) {
             logout();
@@ -45,7 +56,7 @@ export default function SkillSearch() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="p-8 rounded-2xl bg-gradient-to-r from-indigo-600 to-emerald-500 text-white shadow-lg">
-        <h1 className="text-3xl font-bold">Search skills</h1>
+        <h1 className="text-3xl font-bold">Search Skills</h1>
         <p className="mt-2 text-slate-100 max-w-2xl">
           Explore what people in the community can do. Filter by a keyword to quickly
           find the skills you need.
@@ -53,16 +64,17 @@ export default function SkillSearch() {
 
         <div className="mt-6 flex flex-col sm:flex-row gap-3 bg-white/10 p-2 rounded-xl backdrop-blur">
           <input
+            type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Try “React”, “design”, “project management”…"
+            placeholder='Try "React", "design", "project management"...'
             className="flex-1 rounded-lg border border-white/30 bg-white text-slate-900 px-3 py-2 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-200"
           />
           <div className="flex gap-2">
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 hover:bg-white/30"
+              className="px-4 py-2 rounded-lg bg-white/20 text-white border border-white/30 hover:bg-white/30 transition"
             >
               Clear
             </button>
@@ -75,7 +87,7 @@ export default function SkillSearch() {
               key={tag}
               type="button"
               onClick={() => setQuery(tag)}
-              className="px-3 py-1 rounded-full bg-white/15 text-white text-sm hover:bg-white/25"
+              className="px-3 py-1 rounded-full bg-white/15 text-white text-sm hover:bg-white/25 transition"
             >
               {tag}
             </button>
@@ -86,9 +98,9 @@ export default function SkillSearch() {
       <div className="bg-white rounded-xl shadow-sm p-6">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-lg font-semibold text-slate-900">Available skills</div>
+            <div className="text-lg font-semibold text-slate-900">Available Skills</div>
             <div className="text-sm text-slate-500">
-              {loading ? "Searching…" : `${skills.length} result${skills.length === 1 ? "" : "s"}`}
+              {loading ? "Searching..." : `${skills.length} result${skills.length === 1 ? "" : "s"}`}
             </div>
           </div>
         </div>
@@ -103,13 +115,15 @@ export default function SkillSearch() {
           <PageLoader variant="list" rows={6} className="mt-4" />
         ) : skills.length === 0 ? (
           <div className="mt-6 rounded-lg border border-dashed border-slate-200 p-8 text-center text-slate-500">
-            No skills found. Try a different keyword.
+            {query.trim() 
+              ? `No skills found matching "${query}". Try a different keyword.`
+              : "No skills found. Users can add skills to their profiles."}
           </div>
         ) : (
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {skills.map((skill) => (
+            {skills.map((skill, index) => (
               <div
-                key={skill.name}
+                key={skill.name || index}
                 className="p-4 border rounded-lg hover:shadow-sm transition bg-slate-50/40 flex items-center justify-between"
               >
                 <div>

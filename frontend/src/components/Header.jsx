@@ -58,6 +58,14 @@ export default function Header() {
           )}
           {isLoggedIn() && (
             <Link
+              to="/skillsearch"
+              className="text-sm text-slate-600 hover:underline"
+            >
+              Skills
+            </Link>
+          )}
+          {isLoggedIn() && (
+            <Link
               to="/profile"
               className="text-sm text-slate-600 hover:underline"
             >

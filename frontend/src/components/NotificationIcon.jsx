@@ -10,6 +10,17 @@ export default function NotificationIcon() {
 
   useEffect(() => {
     fetchUnreadCount();
+    // Check for incomplete items on mount (once per session)
+    const checkIncomplete = async () => {
+      try {
+        await api.post("/notifications/check-incomplete");
+        fetchUnreadCount(); // Refresh count after check
+      } catch (err) {
+        console.log("Notification check failed:", err);
+      }
+    };
+    checkIncomplete();
+    
     // Poll for new notifications every 30 seconds
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
@@ -64,10 +75,12 @@ export default function NotificationIcon() {
         return "💬";
       case "profile_view":
         return "👁️";
-      case "skill_match":
-        return "🎯";
       case "task_reminder":
         return "⏰";
+      case "incomplete_task":
+        return "📋";
+      case "incomplete_course":
+        return "📚";
       default:
         return "🔔";
     }

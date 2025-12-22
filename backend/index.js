@@ -1,18 +1,20 @@
-require("dotenv").config();
-require("./db");
-const express = require("express");
-var jwt = require("jsonwebtoken");
-const { default: notepadRoute } = require("./controller/notepad.controller");
-const { default: userRoute } = require("./controller/user.controller");
-const { default: taskRoute } = require("./controller/task.controller");
-const { default: notificationRoute } = require("./controller/notification.controller");
-const {
+import "dotenv/config";
+import "./db.js";
+import express from "express";
+import jwt from "jsonwebtoken";
+import notepadRoute from "./controller/notepad.controller.js";
+import userRoute from "./controller/user.controller.js";
+import taskRoute from "./controller/task.controller.js";
+import notificationRoute from "./controller/notification.controller.js";
+import skillRoute from "./controller/skill.controller.js";
+import courseRoute from "./controller/course.controller.js";
+import {
   findUserByEmail,
   createUser,
   getLoginUser,
-} = require("./service/user.service");
-const { authMiddleware } = require("./controller/middleware");
-const cors = require("cors");
+} from "./service/user.service.js";
+import { authMiddleware } from "./controller/middleware.js";
+import cors from "cors";
 const app = express();
 // increase JSON body limit to allow base64 images in profile updates
 app.use(express.json({ limit: "2mb" }), express.urlencoded({ extended: true }));
@@ -66,6 +68,8 @@ app.use("/user", authMiddleware, userRoute);
 app.use("/notepad", authMiddleware, notepadRoute);
 app.use("/task", authMiddleware, taskRoute);
 app.use("/notifications", authMiddleware, notificationRoute);
+app.use("/skill", authMiddleware, skillRoute);
+app.use("/course", authMiddleware, courseRoute);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

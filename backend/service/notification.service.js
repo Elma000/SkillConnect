@@ -12,8 +12,9 @@ const notificationSchema = new Schema(
         "connection_accepted",
         "message",
         "profile_view",
-        "skill_match",
         "task_reminder",
+        "incomplete_task",
+        "incomplete_course",
         "system"
       ]
     },
@@ -139,15 +140,26 @@ export const notifyProfileView = async (viewerId, profileOwnerId, viewerName) =>
   });
 };
 
-// Helper function to create skill match notification
-export const notifySkillMatch = async (userId, matchedUserId, matchedUserName, skill) => {
+// Helper function to create incomplete task notification
+export const notifyIncompleteTask = async (userId, taskId, taskTitle, incompleteGoalsCount) => {
   return createNotification({
     recipient: userId,
-    sender: matchedUserId,
-    type: "skill_match",
-    title: "Skill Match Found",
-    message: `${matchedUserName} has expertise in ${skill}`,
-    link: `/profile/${matchedUserId}`,
-    metadata: { skill }
+    type: "incomplete_task",
+    title: "Incomplete Task",
+    message: `Task "${taskTitle}" has ${incompleteGoalsCount} incomplete goal${incompleteGoalsCount === 1 ? "" : "s"}`,
+    link: `/task/${taskId}`,
+    metadata: { taskId, incompleteGoalsCount }
+  });
+};
+
+// Helper function to create incomplete course notification
+export const notifyIncompleteCourse = async (userId, courseId, courseTitle, incompleteLessonsCount) => {
+  return createNotification({
+    recipient: userId,
+    type: "incomplete_course",
+    title: "Incomplete Course",
+    message: `Course "${courseTitle}" has ${incompleteLessonsCount} incomplete lesson${incompleteLessonsCount === 1 ? "" : "s"}`,
+    link: `/course/${courseId}`,
+    metadata: { courseId, incompleteLessonsCount }
   });
 };

@@ -43,3 +43,12 @@ export const updateTask = async (id, update) => {
 export const deleteTask = async (id) => {
   return await Task.findByIdAndDelete(id);
 };
+
+// Get incomplete tasks for a user (tasks with at least one incomplete goal)
+export const getIncompleteTasks = async (userId) => {
+  const tasks = await Task.find({ owner: userId });
+  return tasks.filter((task) => {
+    if (!task.goals || task.goals.length === 0) return false;
+    return task.goals.some((goal) => !goal.done);
+  });
+};

@@ -54,13 +54,16 @@ export const getLoginUser = async ({ email, password }) => {
 };
 
 /**
- * Return unique skills (case-insensitive) with how many users list each skill.
- * Optional query filters by partial match.
+ * Search for skills across all users
+ * Returns unique skills with count of users who have each skill
+ * @param {string} query - Search query (optional)
+ * @returns {Array} Array of skills with name and count
  */
 export const searchSkills = async (query = "") => {
   const q = (query || "").trim().toLowerCase();
   const pipeline = [
     { $unwind: "$skills" },
+    { $match: { skills: { $exists: true, $ne: null, $ne: "" } } },
     { $addFields: { skillLower: { $toLower: "$skills" } } },
   ];
 
@@ -70,7 +73,7 @@ export const searchSkills = async (query = "") => {
 
   pipeline.push(
     { $group: { _id: "$skillLower", name: { $first: "$skills" }, count: { $sum: 1 } } },
-    { $sort: { name: 1 } }
+    { $sort: { count: -1, name: 1 } }
   );
 
   const rows = await userModel.aggregate(pipeline);
